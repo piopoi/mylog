@@ -1,9 +1,9 @@
 package com.mysns.api.controller;
 
+import com.mysns.api.exception.PostNotFoundException;
 import com.mysns.api.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,5 +29,15 @@ public class ExceptionController {
         }
 
         return errorResponse;
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PostNotFoundException.class)
+    public ErrorResponse postNotFoundException(PostNotFoundException e) {
+        return ErrorResponse.builder()
+                .code("404")
+                .message(e.getMessage())
+                .build();
     }
 }

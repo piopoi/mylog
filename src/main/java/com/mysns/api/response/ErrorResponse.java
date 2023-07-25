@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * {
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
  * }
  */
 @Getter
+//@JsonInclude(value = Include.NON_EMPTY) //값이 존재하는 필드만 반환
 public class ErrorResponse {
 
     private final String code;

@@ -1,6 +1,7 @@
 package com.mysns.api.service;
 
 import com.mysns.api.domain.Post;
+import com.mysns.api.exception.PostNotFoundException;
 import com.mysns.api.repository.PostRepository;
 import com.mysns.api.request.PostCreateRequest;
 import com.mysns.api.request.PostSearchRequest;
@@ -30,7 +31,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse findPost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFoundException::new);
         return PostResponse.of(post);
     }
 
@@ -45,14 +46,14 @@ public class PostService {
     @Transactional
     public void updatePost(Long id, PostUpdateRequest postUpdateRequest) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFoundException::new);
         post.update(postUpdateRequest.toPost());
     }
 
     @Transactional
     public void deletePost(Long id) {
         postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFoundException::new);
         postRepository.deleteById(id);
     }
 }

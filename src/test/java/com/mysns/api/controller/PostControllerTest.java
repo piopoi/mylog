@@ -44,7 +44,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post를 생성할 수 있다.")
+    @DisplayName("post를 생성할 수 있다")
     void createPost() throws Exception {
         //given
         PostCreateRequest postRequest = PostCreateRequest.builder()
@@ -72,7 +72,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("title 없이 post를 생성할 수 없다")
-    void createPostWithoutTitle() throws Exception {
+    void invalid_createPost() throws Exception {
         //given
         PostCreateRequest postRequest = PostCreateRequest.builder()
                 .content("내용입니다.")
@@ -93,7 +93,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("id로 post 1개를 조회할 수 있다.")
+    @DisplayName("id로 post를 조회할 수 있다")
     void findPost() throws Exception {
         //given
         Post post = Post.builder()
@@ -113,7 +113,16 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post 여러 개를 조회할 수 있다.")
+    @DisplayName("invalid: id로 post를 조회할 수 있다")
+    void invalid_findPost() throws Exception {
+        mockMvc.perform(get("/post/{id}", 1L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("post 여러 개를 조회할 수 있다")
     void findPosts() throws Exception {
         //given
         List<Post> requestPosts = IntStream.range(0, 10)
@@ -177,6 +186,24 @@ class PostControllerTest {
                         .content(objectMapper.writeValueAsString(postUpdateRequest))
                 )
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("invalid: post를 수정할 수 있다")
+    void invalid_updatePost() throws Exception {
+        //given
+        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
+                .title("제목")
+                .content("본문")
+                .build();
+
+        //when then
+        mockMvc.perform(put("/post/{id}", 1L)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postUpdateRequest))
+                )
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 

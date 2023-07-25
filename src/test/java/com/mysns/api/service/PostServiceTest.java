@@ -2,8 +2,10 @@ package com.mysns.api.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.mysns.api.domain.Post;
+import com.mysns.api.exception.PostNotFoundException;
 import com.mysns.api.repository.PostRepository;
 import com.mysns.api.request.PostCreateRequest;
 import com.mysns.api.request.PostSearchRequest;
@@ -32,7 +34,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("post를 생성할 수 있다.")
+    @DisplayName("post를 생성할 수 있다")
     void createPost() {
         //given
         PostCreateRequest postRequest = PostCreateRequest.builder()
@@ -52,7 +54,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("id로 post 1개를 조회할 수 있다.")
+    @DisplayName("id로 post 1개를 조회할 수 있다")
     void findPost() {
         //given
         Post savedPost = postRepository.save(Post.builder()
@@ -71,7 +73,21 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("post 여러 개를 조회할 수 있다.")
+    @DisplayName("invalid: id로 post 1개를 조회할 수 있다")
+    void invalid_findPost() {
+        //given
+        Post post = postRepository.save(Post.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build());
+
+        //when then
+        assertThatThrownBy(() -> postService.findPost(post.getId() + 1L))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("post 여러 개를 조회할 수 있다")
     void findPosts() {
         //given
         List<Post> requestPosts = IntStream.range(0, 20)
@@ -119,6 +135,24 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("invalid: post를 수정할 수 있다")
+    void invlid_updatePost() {
+        //given
+        Post savedPost = postRepository.save(Post.builder()
+                .title("제목")
+                .content("본문")
+                .build());
+        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
+                .title("변경된 제목")
+                .content("변경된 본문")
+                .build();
+
+        //when then
+        assertThatThrownBy(() -> postService.updatePost(savedPost.getId() + 1, postUpdateRequest))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("post를 삭제할 수 있다")
     void deletePost() {
         //given
@@ -132,5 +166,19 @@ class PostServiceTest {
 
         //then
         assertThat(postRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("invalid: post를 삭제할 수 있다")
+    void invalid_deletePost() {
+        //given
+        Post savedPost = postRepository.save(Post.builder()
+                .title("제목")
+                .content("본문")
+                .build());
+
+        //when then
+        assertThatThrownBy(() -> postService.deletePost(savedPost.getId() + 1))
+                .isInstanceOf(PostNotFoundException.class);
     }
 }
