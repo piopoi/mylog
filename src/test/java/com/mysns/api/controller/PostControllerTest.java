@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysns.api.domain.Post;
 import com.mysns.api.repository.PostRepository;
-import com.mysns.api.request.PostRequest;
+import com.mysns.api.request.PostCreateRequest;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ class PostControllerTest {
     @DisplayName("post를 생성한다.")
     void createPost() throws Exception {
         //given
-        PostRequest postRequest = PostRequest.builder()
+        PostCreateRequest postRequest = PostCreateRequest.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
@@ -71,7 +71,7 @@ class PostControllerTest {
     @DisplayName("title 없이 post를 생성할 수 없다")
     void createPostWithoutTitle() throws Exception {
         //given
-        PostRequest postRequest = PostRequest.builder()
+        PostCreateRequest postRequest = PostCreateRequest.builder()
                 .content("내용입니다.")
                 .build();
 

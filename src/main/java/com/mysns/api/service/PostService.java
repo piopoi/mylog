@@ -2,8 +2,9 @@ package com.mysns.api.service;
 
 import com.mysns.api.domain.Post;
 import com.mysns.api.repository.PostRepository;
-import com.mysns.api.request.PostRequest;
+import com.mysns.api.request.PostCreateRequest;
 import com.mysns.api.request.PostSearchRequest;
+import com.mysns.api.request.PostUpdateRequest;
 import com.mysns.api.response.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,8 +21,9 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public void savePost(PostRequest postRequest) {
-        Post post = postRequest.toPost();
+    @Transactional
+    public void savePost(PostCreateRequest postCreateRequest) {
+        Post post = postCreateRequest.toPost();
         postRepository.save(post);
     }
 
@@ -32,10 +34,19 @@ public class PostService {
         return PostResponse.of(post);
     }
 
+    @Transactional(readOnly = true)
     public List<PostResponse> findPosts(PostSearchRequest postSearchRequest) {
         return postRepository.getList(postSearchRequest)
                 .stream()
                 .map(PostResponse::of)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void updatePost(Long id, PostUpdateRequest postUpdateRequest) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+        post.update(postUpdateRequest.toPost());
+    }
+
 }

@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @Builder
-public class PostRequest {
+public class PostCreateRequest {
 
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;

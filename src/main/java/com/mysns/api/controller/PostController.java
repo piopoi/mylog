@@ -1,6 +1,6 @@
 package com.mysns.api.controller;
 
-import com.mysns.api.request.PostRequest;
+import com.mysns.api.request.PostCreateRequest;
 import com.mysns.api.request.PostSearchRequest;
 import com.mysns.api.response.PostResponse;
 import com.mysns.api.service.PostService;
@@ -23,8 +23,8 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/post")
-    public void createPost(@RequestBody @Valid PostRequest postRequest) {
-        postService.savePost(postRequest);
+    public void createPost(@RequestBody @Valid PostCreateRequest postCreateRequest) {
+        postService.savePost(postCreateRequest);
     }
 
     @GetMapping("/post/{postId}")
