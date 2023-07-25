@@ -2,16 +2,19 @@ package com.mysns.api.controller;
 
 import com.mysns.api.request.PostCreateRequest;
 import com.mysns.api.request.PostSearchRequest;
+import com.mysns.api.request.PostUpdateRequest;
 import com.mysns.api.response.PostResponse;
 import com.mysns.api.service.PostService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +35,19 @@ public class PostController {
         return postService.findPost(postId);
     }
 
-    @GetMapping("/posts")
+    @GetMapping("/post")
     public List<PostResponse> findPosts(@ModelAttribute PostSearchRequest postSearchRequest) {
         return postService.findPosts(postSearchRequest);
+    }
+
+    @PutMapping("/post/{postId}")
+    public void updatePost(@PathVariable Long postId,
+                           @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
+        postService.updatePost(postId, postUpdateRequest);
+    }
+
+    @DeleteMapping("/post/{postId}")
+    public void deletePost(@PathVariable Long postId) {
+        postService.deletePost(postId);
     }
 }

@@ -2,8 +2,10 @@ package com.mysns.api.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysns.api.domain.Post;
 import com.mysns.api.repository.PostRepository;
 import com.mysns.api.request.PostCreateRequest;
+import com.mysns.api.request.PostUpdateRequest;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +44,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post를 생성한다.")
+    @DisplayName("post를 생성할 수 있다.")
     void createPost() throws Exception {
         //given
         PostCreateRequest postRequest = PostCreateRequest.builder()
@@ -90,7 +93,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post 1개 조회")
+    @DisplayName("id로 post 1개를 조회할 수 있다.")
     void findPost() throws Exception {
         //given
         Post post = Post.builder()
@@ -110,7 +113,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("post 여러 개 조회")
+    @DisplayName("post 여러 개를 조회할 수 있다.")
     void findPosts() throws Exception {
         //given
         List<Post> requestPosts = IntStream.range(0, 10)
@@ -123,7 +126,7 @@ class PostControllerTest {
         postRepository.saveAll(requestPosts);
 
         //when then
-        mockMvc.perform(get("/posts?page=1&size=10")
+        mockMvc.perform(get("/post?page=1&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(10))
@@ -146,7 +149,7 @@ class PostControllerTest {
         postRepository.saveAll(requestPosts);
 
         //when then
-        mockMvc.perform(get("/posts?page=0&size=10")
+        mockMvc.perform(get("/post?page=0&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(10))
@@ -154,4 +157,44 @@ class PostControllerTest {
                 .andExpect(jsonPath("$[0].content").value("본문9"))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("post를 수정할 수 있다")
+    void updatePost() throws Exception {
+        //given
+        Post savedPost = postRepository.save(Post.builder()
+                .title("제목")
+                .content("본문")
+                .build());
+        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
+                .title("변경된 제목")
+                .content("변경된 본문")
+                .build();
+
+        //when then
+        mockMvc.perform(put("/post/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postUpdateRequest))
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("post를 삭제할 수 있다")
+    void deletePost() throws Exception {
+        //given
+        Post savedPost = postRepository.save(Post.builder()
+                .title("제목")
+                .content("본문")
+                .build());
+
+        //when then
+        mockMvc.perform(delete("/post/{postId}", savedPost.getId())
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
 }

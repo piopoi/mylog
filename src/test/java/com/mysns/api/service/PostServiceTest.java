@@ -32,7 +32,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 작성")
+    @DisplayName("post를 생성할 수 있다.")
     void createPost() {
         //given
         PostCreateRequest postRequest = PostCreateRequest.builder()
@@ -52,7 +52,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("postId로 Post 1개를 조회할 수 있다.")
+    @DisplayName("id로 post 1개를 조회할 수 있다.")
     void findPost() {
         //given
         Post savedPost = postRepository.save(Post.builder()
@@ -71,7 +71,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("post 여러개 조회")
+    @DisplayName("post 여러 개를 조회할 수 있다.")
     void findPosts() {
         //given
         List<Post> requestPosts = IntStream.range(0, 20)
@@ -96,53 +96,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("post 제목 수정")
-    void updateTitle() {
-        //given
-        Post savedPost = postRepository.save(Post.builder()
-                .title("제목")
-                .content("본문")
-                .build());
-        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
-                .title("변경된 제목")
-                .content(savedPost.getContent())
-                .build();
-
-        //when
-        postService.updatePost(savedPost.getId(), postUpdateRequest);
-
-        //then
-        Post updatedPost = postRepository.findById(savedPost.getId())
-                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + savedPost.getId()));
-        assertThat(updatedPost.getTitle()).isEqualTo(postUpdateRequest.getTitle());
-        assertThat(updatedPost.getContent()).isEqualTo(savedPost.getContent());
-    }
-
-    @Test
-    @DisplayName("post 본문 수정")
-    void updateContent() {
-        //given
-        Post savedPost = postRepository.save(Post.builder()
-                .title("제목")
-                .content("본문")
-                .build());
-        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
-                .title(savedPost.getTitle())
-                .content("변경된 본문")
-                .build();
-
-        //when
-        postService.updatePost(savedPost.getId(), postUpdateRequest);
-
-        //then
-        Post updatedPost = postRepository.findById(savedPost.getId())
-                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + savedPost.getId()));
-        assertThat(updatedPost.getTitle()).isEqualTo(savedPost.getTitle());
-        assertThat(updatedPost.getContent()).isEqualTo(postUpdateRequest.getContent());
-    }
-
-    @Test
-    @DisplayName("post 제목/본문 수정")
+    @DisplayName("post를 수정할 수 있다")
     void updatePost() {
         //given
         Post savedPost = postRepository.save(Post.builder()
@@ -162,5 +116,21 @@ class PostServiceTest {
                 .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + savedPost.getId()));
         assertThat(updatedPost.getTitle()).isEqualTo(postUpdateRequest.getTitle());
         assertThat(updatedPost.getContent()).isEqualTo(postUpdateRequest.getContent());
+    }
+
+    @Test
+    @DisplayName("post를 삭제할 수 있다")
+    void deletePost() {
+        //given
+        Post savedPost = postRepository.save(Post.builder()
+                .title("제목")
+                .content("본문")
+                .build());
+
+        //when
+        postService.deletePost(savedPost.getId());
+
+        //then
+        assertThat(postRepository.count()).isEqualTo(0);
     }
 }
