@@ -2,24 +2,19 @@ package com.mysns.api.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.data.domain.Sort.Direction.*;
 
 import com.mysns.api.domain.Post;
 import com.mysns.api.repository.PostRepository;
 import com.mysns.api.request.PostRequest;
+import com.mysns.api.request.PostSearchRequest;
 import com.mysns.api.response.PostResponse;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 
 @SpringBootTest
 class PostServiceTest {
@@ -75,26 +70,27 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("1페이지의 Post를 조회할 수 있다.")
+    @DisplayName("post 여러개 조회")
     void findAllPosts() {
         //given
-        List<Post> requestPosts = IntStream.range(1, 31)
-                .mapToObj(i -> {
-                    return Post.builder()
-                            .title("제목" + i)
-                            .content("본문" + i)
-                            .build();
-                })
+        List<Post> requestPosts = IntStream.range(0, 20)
+                .mapToObj(i ->
+                        Post.builder()
+                                .title("제목" + i)
+                                .content("본문" + i)
+                                .build())
                 .toList();
         postRepository.saveAll(requestPosts);
-        Pageable pageable = PageRequest.of(0, 5, Sort.by(DESC, "id"));
+        PostSearchRequest postSearchRequest = PostSearchRequest.builder()
+                .size(10)
+                .page(1)
+                .build();
 
         //when
-        List<PostResponse> posts = postService.findPosts(pageable);
+        List<PostResponse> posts = postService.findPosts(postSearchRequest);
 
         //then
-        assertThat(posts.size()).isEqualTo(5L);
-        assertThat(posts.get(0).getTitle()).isEqualTo(requestPosts.get(29).getTitle());
-        assertThat(posts.get(1).getTitle()).isEqualTo(requestPosts.get(28).getTitle());
+        assertThat(posts.size()).isEqualTo(postSearchRequest.getSize());
+        assertThat(posts.get(0).getTitle()).isEqualTo(requestPosts.get(19).getTitle());
     }
 }

@@ -3,16 +3,12 @@ package com.mysns.api.service;
 import com.mysns.api.domain.Post;
 import com.mysns.api.repository.PostRepository;
 import com.mysns.api.request.PostRequest;
+import com.mysns.api.request.PostSearchRequest;
 import com.mysns.api.response.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +32,8 @@ public class PostService {
         return PostResponse.of(post);
     }
 
-    public List<PostResponse> findPosts(Pageable pageable) {
-        return postRepository.findAll(pageable)
+    public List<PostResponse> findPosts(PostSearchRequest postSearchRequest) {
+        return postRepository.getList(postSearchRequest)
                 .stream()
                 .map(PostResponse::of)
                 .collect(Collectors.toList());
