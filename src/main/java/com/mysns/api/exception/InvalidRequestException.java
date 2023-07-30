@@ -13,6 +13,11 @@ public class InvalidRequestException extends MylogException {
         super(MESSAGE);
     }
 
+    public InvalidRequestException(String fieldName, String message) {
+        super(MESSAGE);
+        addValidation(fieldName, message);
+    }
+
     @Override
     public int getStatusCode() {
         return HttpStatus.BAD_REQUEST.value();

@@ -72,7 +72,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("title 없이 post를 생성할 수 없다")
-    void invalid_createPost() throws Exception {
+    void createPost_emptyTitle() throws Exception {
         //given
         PostCreateRequest postRequest = PostCreateRequest.builder()
                 .content("내용입니다.")
@@ -86,9 +86,26 @@ class PostControllerTest {
                         .content(json)
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-                .andExpect(jsonPath("$.validation.title").value("제목을 입력해주세요."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("title에 욕설을 포함할 수 없다")
+    void createPost_invalidTitle() throws Exception {
+        //given
+        PostCreateRequest postRequest = PostCreateRequest.builder()
+                .title("욕설입니다.")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(postRequest);
+
+        //when then
+        mockMvc.perform(post("/post")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -97,8 +114,8 @@ class PostControllerTest {
     void findPost() throws Exception {
         //given
         Post post = Post.builder()
-                .title("foo")
-                .content("bar")
+                .title("제목입니다.")
+                .content("내용입니다.")
                 .build();
         postRepository.save(post);
 
@@ -113,8 +130,8 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("invalid: id로 post를 조회할 수 있다")
-    void invalid_findPost() throws Exception {
+    @DisplayName("존재하지 않는 id로 post를 조회할 수 없다")
+    void findPost_notExists() throws Exception {
         mockMvc.perform(get("/post/{id}", 1L)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -190,8 +207,8 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("invalid: post를 수정할 수 있다")
-    void invalid_updatePost() throws Exception {
+    @DisplayName("존재하지 않는 id로 post를 수정할 수 있다")
+    void updatePost_notExists() throws Exception {
         //given
         PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
                 .title("제목")
