@@ -36,7 +36,7 @@ onMounted(() => {
 
       <div class="sub d-flex">
         <div class="category">개발</div>
-        <div class="regDate">2023-08-01</div>
+        <div class="regDate">2023-08-01 23:59:59</div>
       </div>
     </el-col>
   </el-row>
@@ -65,7 +65,7 @@ onMounted(() => {
 }
 
 .sub {
-  margin-top: 4px;
+  margin-top: 10px;
   font-size: 0.78rem;
 
   .regDate {
@@ -76,8 +76,8 @@ onMounted(() => {
 
 .content {
   font-size: 0.95rem;
-  margin-top: 8px;
-  color: #7e7e7e;
+  margin-top: 12px;
+  color: #616161;
   white-space: break-spaces;
   line-height: 1.5;
 }

@@ -57,6 +57,7 @@ ul {
     .content {
       font-size: 0.85rem;
       margin-top: 8px;
+      line-height: 1.4;
       color: #7e7e7e;
     }
 
